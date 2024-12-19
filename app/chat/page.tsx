@@ -7,47 +7,13 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
-export default function ChatPage() {
-  const { user, loading } = useAuth();
+function ChatContent() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get("id");
   const recipeId = searchParams.get("recipeId");
   const [showMobileList, setShowMobileList] = useState(false);
-
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-orange-50 to-white min-h-screen">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
-          <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FontAwesomeIcon
-              icon={faComments}
-              className="w-10 h-10 text-orange-500"
-            />
-          </div>
-          <h2 className="text-3xl font-display font-semibold text-gray-900 mb-3">
-            加入聊天
-          </h2>
-          <p className="text-gray-600 mb-8">登入即可參與美食討論</p>
-          <Link
-            href="/login"
-            className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-3 rounded-full hover:from-orange-600 hover:to-pink-600 transition-all inline-block font-medium shadow-lg hover:shadow-xl"
-          >
-            立即登入
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="h-[calc(100vh-4rem)] w-screen bg-gradient-to-b from-orange-100 to-white overflow-hidden">
@@ -111,5 +77,54 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-4 bg-gradient-to-b from-orange-50 to-white min-h-screen">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 max-w-md w-full text-center border border-gray-100">
+          <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <FontAwesomeIcon
+              icon={faComments}
+              className="w-10 h-10 text-orange-500"
+            />
+          </div>
+          <h2 className="text-3xl font-display font-semibold text-gray-900 mb-3">
+            加入聊天
+          </h2>
+          <p className="text-gray-600 mb-8">登入即可參與美食討論</p>
+          <Link
+            href="/login"
+            className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-3 rounded-full hover:from-orange-600 hover:to-pink-600 transition-all inline-block font-medium shadow-lg hover:shadow-xl"
+          >
+            立即登入
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+        </div>
+      }
+    >
+      <ChatContent />
+    </Suspense>
   );
 }
